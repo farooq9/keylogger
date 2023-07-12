@@ -26,8 +26,8 @@ pip install -r requirements.txt
 * Employee Surveillance
   - It can be used to monitor employees and ensure that they are working productively and following company policies.
 
-  # Conclusion
-  * Peace of Mind
-    - Know that your family is safe online or that your employees are productive and following company policies.
-  * Intruder Alert
-    - Be alerted in case of suspicious activity on your devices.
+# Conclusion
+* Peace of Mind
+  - Know that your family is safe online or that your employees are productive and following company policies.
+* Intruder Alert
+  - Be alerted in case of suspicious activity on your devices.
