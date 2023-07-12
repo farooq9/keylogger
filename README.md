@@ -12,3 +12,22 @@ A keylogger is a tool that can record and report on a computer user’s activity
 * Press Ctrl+q to quit
 # Requirement
 pip install -r requirements.txt
+
+# Customization
+* Email Address
+  Customize both sender and receiver email addresses.
+* Time Interval
+  Customize the frequency of email delivery and time to start functioning.
+  21 seconds by default
+
+# Usecase
+* Parental Monitoring
+  - It allows parents to keep their children safe online by monitoring their activity without interfering.
+* Employee Surveillance
+  - It can be used to monitor employees and ensure that they are working productively and following company policies.
+
+  # Conclusion
+  * Peace of Mind
+    - Know that your family is safe online or that your employees are productive and following company policies.
+  * Intruder Alert
+    - Be alerted in case of suspicious activity on your devices.
