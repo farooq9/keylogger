@@ -11,7 +11,7 @@ A keylogger is a tool that can record and report on a computer user’s activity
 * Starts functioning after 21 secs
 * Press Ctrl+q to quit
 # Requirement
-pip install -r requirements.txt
++ pip install -r requirements.txt
 
 # Customization
 * Email Address
