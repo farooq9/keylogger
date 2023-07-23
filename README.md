@@ -33,3 +33,4 @@ A keylogger is a tool that can record and report on a computer user’s activity
   - Know that your family is safe online or that your employees are productive and following company policies.
 * Intruder Alert
   - Be alerted in case of suspicious activity on your devices.
+## This code DOES NOT promote illegal activities! The content is only for educational purposes and to create awareness!
