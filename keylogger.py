@@ -100,7 +100,7 @@ def become_persistent():    #persistence vid7
 
 
 def send_email():
-    server = "mail.vitelglobal.com"
+    server = "smpt.gmail.com"
     port = 587
     sender = "youremail@gmail.com"
     password = "password"
