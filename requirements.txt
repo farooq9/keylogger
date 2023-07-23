@@ -1,3 +1,5 @@
 keyboard
 Pillow
 pyperclip
+wmi
+psutil
